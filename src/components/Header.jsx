@@ -36,12 +36,11 @@ class Header extends Component {
     const { showLoadingScreen, userCredentials: { name } } = this.state;
     return (
       <header data-testid="header-component">
-        Header
+        {showLoadingScreen
+          ? <Loading /> : <span data-testid="header-user-name">{ `${name}` }</span>}
         <Link data-testid="link-to-search" to="/search">Search</Link>
         <Link data-testid="link-to-favorites" to="/favorites">Favorites</Link>
         <Link data-testid="link-to-profile" to="/profile">Profile</Link>
-        {showLoadingScreen
-          ? <Loading /> : <p data-testid="header-user-name">{ `${name}` }</p>}
       </header>
     );
   }
