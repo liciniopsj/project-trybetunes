@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Header from '../components/Header';
 
 class Album extends Component {
   render() {
     const { match } = this.props;
     const { id } = match.params;
     return (
-      <div data-testid="page-album">{ `Album ${id}` }</div>
+      <div data-testid="page-album">
+        <Header />
+        { `Album ${id}` }
+      </div>
     );
   }
 }
