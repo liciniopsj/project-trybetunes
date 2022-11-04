@@ -1,10 +1,25 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import Loading from './Loading';
 
 class Search extends Component {
   state = {
     searchInput: '',
     buttonStatus: true,
+    showLoadingScreen: false,
+    albumList: [],
+    searchedArtist: '',
+    isAlbumListBlank: false,
+  };
+
+  showLoadingScreen = () => {
+    const LOADTIME = 1500;
+    this.setState({ showLoadingScreen: true });
+    setTimeout(() => {
+      this.setState({ showLoadingScreen: false });
+    }, LOADTIME);
   };
 
   handleButtonDisableToggle = () => {
@@ -16,12 +31,39 @@ class Search extends Component {
     });
   };
 
-  handleSearchButton = (event) => {
+  checkBlankAlbumList = (searchResult) => searchResult.length === 0;
+
+  buildArtistAlbumList = (searchResult) => {
+    const albumList = searchResult.map((album) => (
+      <div key={ album.collectionId }>
+        <Link
+          data-testid={ `link-to-album-${album.collectionId}` }
+          to={ `/album/${album.collectionId}` }
+        >
+          <img src={ album.artworkUrl100 } alt="Album cover" />
+          <h4>{ album.collectionName }</h4>
+          <h6>{ album.artistName }</h6>
+        </Link>
+      </div>
+    ));
+    return albumList;
+  };
+
+  handleSearchButton = async (event) => {
     event.preventDefault();
     const { searchInput } = this.state;
-    console.log(searchInput);
+    // console.log(searchInput);
+    this.showLoadingScreen();
+    const searchResult = await searchAlbumsAPI(searchInput);
+    const isAlbumListBlank = this.checkBlankAlbumList(searchResult);
+    const builtAlbumList = this.buildArtistAlbumList(searchResult);
+    // const artistName = searchInput;
+    // console.log(searchResult);
     this.setState({
+      searchedArtist: `Resultado de álbuns de: ${searchInput}`,
       searchInput: '',
+      albumList: builtAlbumList,
+      isAlbumListBlank,
     });
   };
 
@@ -35,10 +77,27 @@ class Search extends Component {
   };
 
   render() {
-    const { searchInput, buttonStatus } = this.state;
-    return (
-      <div data-testid="page-search">
-        <Header />
+    const {
+      searchInput,
+      buttonStatus,
+      albumList,
+      showLoadingScreen,
+      isAlbumListBlank,
+      searchedArtist } = this.state;
+
+    const blankAlbumListHTML = (
+      <h2>Nenhum álbum foi encontrado</h2>
+    );
+
+    const albumListHTML = (
+      <div>
+        <p>{ searchedArtist }</p>
+        {albumList}
+      </div>
+    );
+
+    const searchHTMLContent = (
+      <>
         <input
           data-testid="search-artist-input"
           type="search"
@@ -56,6 +115,13 @@ class Search extends Component {
         >
           Pesquisar
         </button>
+        { isAlbumListBlank ? blankAlbumListHTML : albumListHTML }
+      </>);
+
+    return (
+      <div data-testid="page-search">
+        <Header />
+        { showLoadingScreen ? <Loading /> : searchHTMLContent }
       </div>
     );
   }

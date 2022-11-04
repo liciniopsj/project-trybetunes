@@ -12,9 +12,9 @@ class Login extends Component {
 
   handleInput = (event) => {
     const { value } = event.target;
-    const { history } = this.props;
+    // const { history } = this.props;
     // console.log(value);
-    console.log(history);
+    // console.log(history);
 
     this.setState({
       inputName: value,
