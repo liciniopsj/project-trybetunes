@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+// import { addSong } from '../services/favoriteSongsAPI';
 
 class MusicCard extends Component {
   render() {
-    const { trackName, previewUrl } = this.props;
-    return (
+    const { trackName,
+      previewUrl,
+      trackId, handleFavoriteMusic, chkboxFavorite } = this.props;
+    const musicCardHTMLContent = (
       <div>
         <span>{ trackName }</span>
         <audio data-testid="audio-component" src={ previewUrl } controls>
@@ -14,6 +17,23 @@ class MusicCard extends Component {
           <code>audio</code>
           .
         </audio>
+        <label htmlFor="checkbox-music">
+          Favorita
+          <input
+            data-testid={ `checkbox-music-${trackId}` }
+            type="checkbox"
+            name={ trackName }
+            id={ trackId }
+            checked={ chkboxFavorite }
+            onChange={ handleFavoriteMusic }
+            alt={ trackId }
+          />
+        </label>
+      </div>
+    );
+    return (
+      <div>
+        { musicCardHTMLContent }
       </div>
     );
   }
