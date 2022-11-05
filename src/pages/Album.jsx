@@ -77,7 +77,7 @@ class Album extends Component {
     const { getMusicsResults } = this.state;
     const slicedResults = getMusicsResults.slice(1);
     const selectedTrack = slicedResults.find((track) => track.trackId === +alt);
-    // this.showLoadingScreen();
+    this.showLoadingScreen();
     if (checked) await addSong(selectedTrack);
     if (!checked) await removeSong(selectedTrack);
   };
