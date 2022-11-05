@@ -6,6 +6,9 @@ import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
 import { addSong, removeSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
+// Dear future me. Please forgive me.
+// I can't even begin to express how sorry I am.
+
 class Album extends Component {
   state = {
     getMusicsResults: [],
