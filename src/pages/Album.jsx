@@ -4,13 +4,13 @@ import getMusics from '../services/musicsAPI';
 import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, removeSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   state = {
     getMusicsResults: [],
     artistInfo: '',
-    chkboxFavorite: [],
+    chkboxFavorite: {},
     display: 'show',
     showLoadingText: false,
   };
@@ -18,36 +18,68 @@ class Album extends Component {
   async componentDidMount() {
     const { match } = this.props;
     const { id } = match.params;
+    // const { chkboxFavorite } = this.state;
     const getMusicsResults = await getMusics(id);
     const artistInfo = getMusicsResults[0];
-    // console.log(getMusicsResults);
+    this.showLoadingScreen();
+    const favorites = await getFavoriteSongs();
+    // console.log(favoriteSongs);
     this.setState({
       getMusicsResults,
       artistInfo,
     });
+    // console.log(favorites);
+    this.handleFavoriteChkBoxes(favorites);
   }
 
+  componentDidUpdate() {
+    // console.log(this.state);
+  }
+
+  handleFavoriteChkBoxes = (favorites) => {
+    favorites.forEach((song) => {
+      this.setState((prev) => ({
+        chkboxFavorite: { ...prev.chkboxFavorite, [song.trackName]: true },
+      }));
+    });
+  };
+
   showLoadingScreen = () => {
-    const LOADTIME = 1000;
+    const LOADTIME = 500;
     this.setState({ display: 'hidden', showLoadingText: true });
     setTimeout(() => {
       this.setState({ display: 'visible', showLoadingText: false });
     }, LOADTIME);
   };
 
+  // handleSaveSong = async (alt) => {
+  //   const { getMusicsResults } = this.state;
+  //   const slicedResults = getMusicsResults.slice(1);
+  //   const selectedTrack = slicedResults.find((track) => track.trackId === +alt);
+  //   this.showLoadingScreen();
+  //   await addSong(selectedTrack);
+  // };
+
+  // handleRemoveSong = async (alt) => {
+  //   const { getMusicsResults } = this.state;
+  //   const slicedResults = getMusicsResults.slice(1);
+  //   const selectedTrack = slicedResults.find((track) => track.trackId === +alt);
+  //   this.showLoadingScreen();
+  //   await removeSong(selectedTrack);
+  // };
+
   handleFavoriteMusic = async (event) => {
     const { name, checked, alt } = event.target;
+    this.setState((prev) => ({
+      chkboxFavorite: { ...prev.chkboxFavorite, [name]: checked },
+    }));
+    // console.log(this.state);
     const { getMusicsResults } = this.state;
-    this.setState({
-      [name]: checked,
-    });
     const slicedResults = getMusicsResults.slice(1);
-    // console.log(slicedResults);
-    // console.log(alt);
     const selectedTrack = slicedResults.find((track) => track.trackId === +alt);
-    // console.log(selectedTrack);
-    this.showLoadingScreen();
-    await addSong(selectedTrack);
+    // this.showLoadingScreen();
+    if (checked) await addSong(selectedTrack);
+    if (!checked) await removeSong(selectedTrack);
   };
 
   render() {
@@ -56,8 +88,9 @@ class Album extends Component {
     const { getMusicsResults,
       artistInfo,
       display,
+      chkboxFavorite,
       showLoadingText,
-      chkboxFavorite } = this.state;
+    } = this.state;
     const { artistName, collectionName } = artistInfo;
     const musicCardList = getMusicsResults.slice(1);
     // const albumHTMLContent = (
@@ -73,7 +106,7 @@ class Album extends Component {
             <h3 data-testid="artist-name">{artistName}</h3>
             <h4 data-testid="album-name">{collectionName}</h4>
           </div>
-          {musicCardList.map((track, index) => (
+          {musicCardList.map((track) => (
             <div key={ track.trackId }>
               <MusicCard
                 trackName={ track.trackName }
@@ -82,7 +115,7 @@ class Album extends Component {
                 trackInfo={ track }
                 showLoadingScreen={ this.showLoadingScreen }
                 handleFavoriteMusic={ this.handleFavoriteMusic }
-                chkboxFavorite={ chkboxFavorite[index] }
+                chkboxFavorite={ chkboxFavorite[track.trackName] }
               />
             </div>
           ))}

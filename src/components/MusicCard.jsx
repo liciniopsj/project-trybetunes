@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import { addSong } from '../services/favoriteSongsAPI';
 
 class MusicCard extends Component {
   render() {
     const { trackName,
       previewUrl,
       trackId, handleFavoriteMusic, chkboxFavorite } = this.props;
-    const musicCardHTMLContent = (
+    return (
       <div>
         <span>{ trackName }</span>
         <audio data-testid="audio-component" src={ previewUrl } controls>
@@ -29,11 +28,6 @@ class MusicCard extends Component {
             alt={ trackId }
           />
         </label>
-      </div>
-    );
-    return (
-      <div>
-        { musicCardHTMLContent }
       </div>
     );
   }
