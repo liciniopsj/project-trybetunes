@@ -25,7 +25,7 @@ class Header extends Component {
   }
 
   showLoadingScreen = () => {
-    const LOADTIME = 400;
+    const LOADTIME = 1500;
     this.setState({ showLoadingScreen: true });
     setTimeout(() => {
       this.setState({ showLoadingScreen: false });
